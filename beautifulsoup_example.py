@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+from urllib.parse import urljoin
 
 
 base_url = "https://www.psychologie.uzh.ch"
@@ -57,7 +58,7 @@ for subpage_url in subpage_links:
                 print(f"\nLink: {link}")
                 if link:
                     full_description = []
-                    subsubpage_link = base_url + link["href"]
+                    subsubpage_link = urljoin(base_url, link["href"])
                     subresponse = requests.get(subsubpage_link)
                     subsub_soup = BeautifulSoup(subresponse.text, "html.parser")
                     description = subsub_soup.find("section", class_="ContentArea")
@@ -88,17 +89,4 @@ for subpage_url in subpage_links:
             all_data.append(table_data)
 
 df = pd.DataFrame(all_data)
-df.to_csv("beautifulsoup.csv",index=False,sep=";",quoting=1,encoding="utf-8-sig")
-
-
-            
-            
-
-
-
-      
-
-                
-
-
-        
+df.to_csv("data/beautifulsoup.csv",index=False,sep=";",quoting=1,encoding="utf-8-sig")

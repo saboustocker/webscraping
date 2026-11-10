@@ -52,9 +52,20 @@ while attempt < max_attempts:
 
     attempt+=1
 
-links = driver.find_elements(By.CSS_SELECTOR, "a#video-title-link")
-aria_labels = [link.get_attribute("aria-label") for link in links]
-for label in aria_labels:
+
+
+links = driver.find_elements(By.CSS_SELECTOR,
+    "a#video-title-link, a#video-title, ytd-rich-item-renderer a[href*='/watch'][aria-label]")
+print(f"Found {len(links)} links")
+
+seen = set()
+aria_labels = []
+for link in links:
+    href, label = link.get_attribute("href"), link.get_attribute("aria-label")
+    if label and href not in seen:
+        seen.add(href)
+        aria_labels.append(label)
+
     print(label)
 
     title = text_before(label,"by Universität Zürich")
@@ -74,4 +85,4 @@ for label in aria_labels:
     data.append([title, views, date, duration])
 
 df = pd.DataFrame(data, columns=["Title", "Views", "Date", "Duration"])
-df.to_csv("youtube_data.csv",index=False,quoting=1,sep=";",encoding="utf-8")
+df.to_csv("data/youtube_data.csv",index=False,quoting=1,sep=";",encoding="utf-8")
